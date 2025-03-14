@@ -1,1 +1,5 @@
-GET http://localhost:8081/hello
+###Hello to everyone
+GET http://localhost:8081/auth/login
+
+###HEllo to me
+GET http://localhost:8081/auth/register

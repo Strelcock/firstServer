@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"firstServer/configs"
 	"firstServer/internal/auth"
 	"firstServer/internal/link"
@@ -9,7 +10,30 @@ import (
 	"firstServer/pkg/middleware"
 	"fmt"
 	"net/http"
+	"time"
 )
+
+func tickOperation(ctx context.Context) {
+	ticker := time.NewTicker(200 * time.Millisecond)
+	for {
+		select {
+		case <-ticker.C:
+			fmt.Println("Tick")
+		case <-ctx.Done():
+			fmt.Println("Cancel")
+			return
+		}
+	}
+}
+
+func main2() {
+	ctx, cancel := context.WithCancel(context.Background())
+
+	go tickOperation(ctx)
+	time.Sleep(2 * time.Second)
+	cancel()
+	time.Sleep(2 * time.Second)
+}
 
 func main() {
 	conf := configs.LoadConfig()
@@ -32,6 +56,7 @@ func main() {
 
 	link.NewLinkHandler(router, link.LinkHandlerDeps{
 		LinkRepo: linkRepo,
+		Config:   conf,
 	})
 
 	//Midlewares

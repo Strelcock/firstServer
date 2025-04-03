@@ -4,7 +4,7 @@ Content-Type: application/json
 
 {
     "email": "a@ba.ru",
-    "password": "qweasdzxc111"
+    "password": "qweasdzxc"
 }
 
 ###HEllo to me
@@ -12,8 +12,8 @@ POST http://localhost:8081/auth/register
 Content-Type: application/json
 
 {
-    "name": "IVAns",
-    "email": "aa.ru",
+    "name": "IVAn",
+    "email": "a@a.ru",
     "password": "qweasdzxc"
 }
 

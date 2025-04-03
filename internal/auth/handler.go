@@ -40,7 +40,7 @@ func (ah AuthHandler) Login() http.HandlerFunc {
 			return
 		}
 		key := ah.Config.Auth.Secret
-		data, err := jwt.NewJWT(key).Create(email)
+		data, err := jwt.NewJWT(key).Create(jwt.JWTData{Email: email})
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -64,7 +64,7 @@ func (ah *AuthHandler) Register() http.HandlerFunc {
 			return
 		}
 		key := ah.Config.Auth.Secret
-		data, err := jwt.NewJWT(key).Create(email)
+		data, err := jwt.NewJWT(key).Create(jwt.JWTData{Email: email})
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusUnauthorized)
 			return

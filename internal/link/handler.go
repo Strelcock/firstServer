@@ -5,6 +5,7 @@ import (
 	"firstServer/pkg/middleware"
 	"firstServer/pkg/req"
 	"firstServer/pkg/res"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -69,6 +70,9 @@ func (h LinkHandler) GoTo() http.HandlerFunc {
 
 func (h LinkHandler) Update() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctxEmail := r.Context().Value(middleware.ContextEmailKey)
+		fmt.Println(ctxEmail)
+
 		body, err := req.HandleBody[LinkUpdateRequest](&w, r)
 		if err != nil {
 			return

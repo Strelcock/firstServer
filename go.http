@@ -35,7 +35,7 @@ GET http://localhost:8081/trWEsc HTTP/1.1
 ###Update link
 PATCH http://localhost:8081/link/2 HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer FASDFJsdaf
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFAYmEucnUifQ.AuEKIYp9_ppBx6P7HWeBaiNBC2Mu61CgxZiVo4AJLRs
 
 {
     "url":"http://vk.com"

@@ -1,0 +1,116 @@
+package link
+
+import (
+	"firstServer/pkg/middleware"
+	"firstServer/pkg/req"
+	"firstServer/pkg/res"
+	"net/http"
+	"strconv"
+
+	"gorm.io/gorm"
+)
+
+type LinkHandler struct {
+	LinkRepo *LinkRepository
+}
+
+type LinkHandlerDeps struct {
+	LinkRepo *LinkRepository
+}
+
+func NewLinkHandler(router *http.ServeMux, deps LinkHandlerDeps) {
+	handler := LinkHandler{
+		LinkRepo: deps.LinkRepo,
+	}
+	router.HandleFunc("POST /link", handler.Create())
+	router.HandleFunc("GET /{hash}", handler.GoTo())
+	router.Handle("PATCH /link/{id}", middleware.IsAuthed(handler.Update()))
+	router.HandleFunc("DELETE /link/{id}", handler.Delete())
+
+}
+
+func (h LinkHandler) Create() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		body, err := req.HandleBody[LinkCreateRequset](&w, r)
+		if err != nil {
+			return
+		}
+
+		link := NewLink(body.Url)
+		for {
+			if res, _ := h.LinkRepo.GetByHash(link.Hash); res != nil {
+				link.RegenerateHash()
+			} else {
+				break
+			}
+		}
+		createdLink, err := h.LinkRepo.Create(link)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		res.Json(w, createdLink, 201)
+
+	}
+}
+
+func (h LinkHandler) GoTo() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		hash := r.PathValue("hash")
+		link, err := h.LinkRepo.GetByHash(hash)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusNotFound)
+		}
+		http.Redirect(w, r, link.Url, http.StatusTemporaryRedirect)
+	}
+}
+
+func (h LinkHandler) Update() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		body, err := req.HandleBody[LinkUpdateRequest](&w, r)
+		if err != nil {
+			return
+		}
+
+		idString := r.PathValue("id")
+		id, err := strconv.ParseUint(idString, 10, 32)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		link, err := h.LinkRepo.Update(&Link{
+			Model: gorm.Model{ID: uint(id)},
+			Url:   body.Url,
+			Hash:  body.Hash,
+		})
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		res.Json(w, link, 201)
+
+	}
+}
+
+func (h LinkHandler) Delete() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		idString := r.PathValue("id")
+		id, err := strconv.ParseUint(idString, 10, 32)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		}
+
+		_, err = h.LinkRepo.GetById(uint(id))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
+
+		err = h.LinkRepo.Delete(uint(id))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		res.Json(w, nil, 200)
+	}
+}

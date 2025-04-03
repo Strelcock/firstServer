@@ -1,5 +1,43 @@
 ###Hello to everyone
-GET http://localhost:8081/auth/login
+POST http://localhost:8081/auth/login
+Content-Type: application/json
+
+{
+    "email": "a@ba.ru",
+    "password": "qweasdzxc111"
+}
 
 ###HEllo to me
-GET http://localhost:8081/auth/register
+POST http://localhost:8081/auth/register
+Content-Type: application/json
+
+{
+    "name": "IVAns",
+    "email": "aa.ru",
+    "password": "qweasdzxc"
+}
+
+###Delete link
+DELETE http://localhost:8081/link/3
+
+###Create link
+POST http://localhost:8081/link 
+Content-Type: application/json
+
+{
+    "url": "https://vk.com"
+}
+
+
+###GoTo link
+GET http://localhost:8081/trWEsc HTTP/1.1
+
+###Update link
+PATCH http://localhost:8081/link/2 HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer FASDFJsdaf
+
+{
+    "url":"http://vk.com"
+    
+}

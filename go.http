@@ -25,7 +25,7 @@ POST http://localhost:8081/link
 Content-Type: application/json
 
 {
-    "url": "https://vk.com"
+    "url": "https://github.com"
 }
 
 
@@ -41,3 +41,10 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFAYmEuc
     "url":"http://vk.com"
     
 }
+
+###Get links
+GET http://localhost:8081/link?limit=5&offset=5
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFAYmEucnUifQ.AuEKIYp9_ppBx6P7HWeBaiNBC2Mu61CgxZiVo4AJLRs
+
+###Get stats
+GET http://localhost:8081/stat?from=2024-10-09&to=2024-09-01&by=month

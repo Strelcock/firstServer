@@ -62,3 +62,25 @@ func (lr *LinkRepository) GetById(id uint) (*Link, error) {
 	}
 	return &link, nil
 }
+
+func (lr *LinkRepository) Count() int64 {
+	var count int64
+	lr.Database.
+		Table("links").
+		Where("deleted_at is null").
+		Count(&count)
+	return count
+}
+
+func (lr *LinkRepository) GetAll(limit, offset int) []Link {
+	var links []Link
+
+	lr.Database.
+		Table("links").
+		Where("deleted_at is null").
+		Order("id asc").
+		Limit(limit).
+		Offset(offset).
+		Scan(&links)
+	return links
+}

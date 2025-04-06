@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	FilterByDay   = "day"
-	FilterByMonth = "month"
+	GroupByDay   = "day"
+	GroupByMonth = "month"
 )
 
 type StatHandler struct {
@@ -45,19 +45,12 @@ func (sh *StatHandler) GetStat() http.HandlerFunc {
 		}
 		by := r.URL.Query().Get("by")
 
-		if by != FilterByDay && by != FilterByMonth {
+		if by != GroupByDay && by != GroupByMonth {
 			http.Error(w, "Invalid by param", http.StatusBadRequest)
 			return
 		}
 
-		res.Json(w, struct {
-			From time.Time `json:"from"`
-			To   time.Time `json:"to"`
-			By   string    `json:"by"`
-		}{
-			From: from,
-			To:   to,
-			By:   by,
-		}, 200)
+		stats := sh.StatRepo.GetStats(by, from, to)
+		res.Json(w, stats, http.StatusOK)
 	}
 }

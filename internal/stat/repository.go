@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"gorm.io/datatypes"
+	"gorm.io/gorm"
 )
 
 type StatRepository struct {
@@ -31,4 +32,24 @@ func (sr *StatRepository) AddClick(linkId uint) {
 		stat.Clicks++
 		sr.Db.Save(&stat)
 	}
+}
+
+func (sr *StatRepository) GetStats(by string, from, to time.Time) []GetStatResponse {
+	var stats []GetStatResponse
+	var selectQuery string
+	switch by {
+	case GroupByDay:
+		selectQuery = "to_char(date, 'YYYY-MM-DD') as period, sum(clicks)"
+	case GroupByMonth:
+		selectQuery = "to_char(date, 'YYYY-MM') as period, sum(clicks)"
+	}
+	query := sr.DB.Table("stats").
+		Select(selectQuery).
+		Session(&gorm.Session{})
+
+	query.Where("date BETWEEN ? and ?", from, to).
+		Group("period").
+		Order("period").
+		Scan(&stats)
+	return stats
 }
